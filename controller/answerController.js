@@ -1,4 +1,4 @@
-const dbConnection = require("../db/dbConfig")
+ const dbConnection = require("../db/dbConfig")
 const { StatusCodes } = require("http-status-codes")
 
 async function postAnswer(req, res) {
@@ -39,4 +39,24 @@ async function getAnswer(req, res) {
   }
 }
 
-module.exports = { postAnswer, getAnswer }
+async function getAnswerStats(req, res) {
+  try {
+    const [[{ totalAnswers }]] = await dbConnection.query(
+      "SELECT COUNT(*) AS totalAnswers FROM answers"
+    );
+
+    res.status(StatusCodes.OK).json({
+      totalAnswers,
+    });
+  } catch (error) {
+    console.error("Get answer count error:", error);
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      msg: "Error fetching answer count",
+      error: error.message,
+    });
+  }
+}
+
+
+
+module.exports = { postAnswer, getAnswer, getAnswerStats };

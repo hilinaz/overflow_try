@@ -64,9 +64,30 @@ async function getSeachedQuestion(req, res) {
     allQuestion,
   })
 }
+
+async function countQuestions(req, res) {
+  try {
+    const [[{ totalQuestions }]] = await dbConnection.query(
+      "SELECT COUNT(*) AS totalQuestions FROM questions"
+    );
+
+    return res.status(StatusCodes.OK).json({
+      message: "Total questions count retrieved successfully",
+      totalQuestions,
+    });
+  } catch (error) {
+    console.error("Error counting questions:", error.message);
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      message: "An unexpected error occurred while counting questions",
+      error: error.message,
+    });
+  }
+}
+
 module.exports = {
   createQuestion,
   getAllQuestion,
   singleQuestion,
   getSeachedQuestion,
-}
+  countQuestions,
+};

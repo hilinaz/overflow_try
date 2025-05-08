@@ -169,4 +169,25 @@ async function getFullName(req, res) {
   }
 }
 
-module.exports = { login, register, checkUser, getFullName };
+
+// ========== Get Total Users Only ==========
+async function getUserStats(req, res) {
+  try {
+    const [[{ totalUsers }]] = await DBConnection.query(
+      "SELECT COUNT(*) AS totalUsers FROM users"
+    );
+
+    res.status(StatusCodes.OK).json({
+      totalUsers,
+    });
+  } catch (error) {
+    console.error("Get user count error:", error);
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      msg: "Error fetching user count",
+      error: error.message,
+    });
+  }
+}
+
+module.exports = { login, register, checkUser, getFullName, getUserStats };
+
