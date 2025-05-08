@@ -59,6 +59,10 @@ dependencies {
     implementation(libs.androidx.camera.core)
     implementation(libs.androidx.glance.preview)
     implementation(libs.androidx.tiles.tooling.preview)
+   
+
+
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -77,7 +81,11 @@ dependencies {
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-tooling")
     implementation("androidx.compose.foundation:foundation")
-    implementation("androidx.navigation:navigation-compose:2.7.5") // Check for the latest version
+    implementation("androidx.navigation:navigation-compose:2.7.5")
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2") // Check for the latest version
 }
 
 dependencies {
