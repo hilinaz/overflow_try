@@ -3,7 +3,7 @@ const bcrypt = require("bcrypt");
 const { StatusCodes } = require("http-status-codes");
 const jwt = require("jsonwebtoken");
 
-// ========== Register (Updated to handle role_id) ==========
+// ========== Register (Updated to handle role_id and profession) ==========
 const register = async (req, res) => {
   const {
     username,
@@ -11,10 +11,18 @@ const register = async (req, res) => {
     password,
     firstname,
     lastname,
+    profession,
     role_id = 2,
-  } = req.body; // Default to 2 if not provided
+  } = req.body;
 
-  if (!username || !email || !password || !firstname || !lastname) {
+  if (
+    !username ||
+    !email ||
+    !password ||
+    !firstname ||
+    !lastname ||
+    !profession
+  ) {
     return res.status(StatusCodes.BAD_REQUEST).json({
       msg: "All fields are required",
     });
@@ -43,15 +51,23 @@ const register = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // Insert user with role_id
+    // Insert user with role_id and profession
     await DBConnection.query(
-      "INSERT INTO users (username, email, password, firstname, lastname, role_id) VALUES (?, ?, ?, ?, ?, ?)",
-      [username, email, hashedPassword, firstname, lastname, role_id]
+      "INSERT INTO users (username, email, password, firstname, lastname, profession, role_id) VALUES (?, ?, ?, ?, ?, ?, ?)",
+      [
+        username,
+        email,
+        hashedPassword,
+        firstname,
+        lastname,
+        profession,
+        role_id,
+      ]
     );
 
     return res.status(StatusCodes.CREATED).json({
       msg: "User created successfully",
-      role_id, // Return the assigned role_id for confirmation
+      role_id,
     });
   } catch (error) {
     console.error("Registration error:", error);
@@ -111,7 +127,7 @@ const login = async (req, res) => {
         userid,
         username,
         role_id,
-        role: role_name, // "admin" or "user"
+        role: role_name,
       },
     });
   } catch (error) {
@@ -169,7 +185,6 @@ async function getFullName(req, res) {
   }
 }
 
-
 // ========== Get Total Users Only ==========
 async function getUserStats(req, res) {
   try {
@@ -189,5 +204,34 @@ async function getUserStats(req, res) {
   }
 }
 
-module.exports = { login, register, checkUser, getFullName, getUserStats };
+// ========== Get All Names and Professions ==========
+async function getAllUserNamesAndProfessions(req, res) {
+  try {
+    const [users] = await DBConnection.query(
+      "SELECT firstname, lastname, profession FROM users"
+    );
 
+    const result = users.map((user) => ({
+      fullname: `${user.firstname} ${user.lastname}`,
+      profession: user.profession,
+    }));
+
+    res.status(StatusCodes.OK).json({ users: result });
+  } catch (error) {
+    console.error("Error fetching user names and professions:", error);
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      msg: "Error fetching user data",
+      error: error.message,
+    });
+  }
+}
+
+// ========== Exports ==========
+module.exports = {
+  login,
+  register,
+  checkUser,
+  getFullName,
+  getUserStats,
+  getAllUserNamesAndProfessions,
+};

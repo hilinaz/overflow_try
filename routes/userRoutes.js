@@ -9,10 +9,12 @@ const {
   checkUser,
   getFullName,
   getUserStats,
+  getAllUserNamesAndProfessions,
 } = require("../controller/userController");
 
 router.post("/register", register)
 router.post("/login", login)
+router.get("/getAllUserNamesAndProfessions", getAllUserNamesAndProfessions);
 router.get("/check", authMiddleWare,checkUser)
 router.get("/getFullName", authMiddleWare, getFullName)
 router.get("/getUserStats", getUserStats);
