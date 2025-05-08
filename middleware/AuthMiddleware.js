@@ -20,8 +20,8 @@ async function autMiddleware(req, res, next) {
   console.log(token, "now");
 
   try {
-    const { username, userid } = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = { username, userid };
+    const { username, userid, role_id, role_name } = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = { username, userid, role_id, role_name };
     console.log(req.user);
     next();
   } catch (error) {
